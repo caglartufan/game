@@ -2,13 +2,13 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 var width, height;
 var lastRender;
-var keyMap = {
+const keyMap = {
     65: 'left',
     68: 'right',
     87: 'up',
     83: 'down'
 };
-var speedCoefficient = 0.4;
+const speedCoefficient = 0.4;
 var players = [];
 
 const socket = io();
@@ -17,21 +17,8 @@ socket.on('connect', () => {
     newPlayer(socket.id);
 });
 
-socket.on('init players', (playersConnected) => {
-    players = playersConnected;
-    lastRender = 0;
-    window.requestAnimationFrame(loop);
-});
-
 socket.on('update', (playersConnected) => {
     players = playersConnected;
-});
-
-socket.on('player joined', (player) => {
-    if(player.id !== socket.id) {
-        players.push(player);
-        console.log(socket.id + ' joined!');
-    }
 });
 
 socket.on('player left', (playerId) => {
@@ -87,8 +74,13 @@ function newPlayer(id) {
             down: false
         }
     };
-    players.push(player);
-    socket.emit('player joined', player);
+    socket.emit('player joined', player, (isClientReady) => {
+        console.log(isClientReady);
+        if(isClientReady) {
+            lastRender = 0;
+            window.requestAnimationFrame(loop);
+        }
+    });
 }
 
 function draw() {

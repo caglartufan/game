@@ -36,10 +36,10 @@ app.use('/', indexRouter);
 io.on('connection', (socket) => {
     debug(`${socket.id} connected!`);
 
-    socket.on('player joined', (player) => {
+    socket.on('player joined', (player, callback) => {
         players.push(player);
-        io.emit('player joined', player);
-        socket.emit('init players', players);
+        io.emit('update', players);
+        callback(true);
     });
 
     socket.on('update', (player) => {
