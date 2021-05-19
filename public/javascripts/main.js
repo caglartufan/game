@@ -86,8 +86,13 @@ function draw() {
     });
 }
 
-function update(progress) {
-    let player = players.find((p) => p.id === socket.id);
+function update() {
+    socket.emit('get current frame', (connectedPlayers) => {
+        if(connectedPlayers && connectedPlayers.length) {
+            players = connectedPlayers;
+        }
+    });
+    /*let player = players.find((p) => p.id === socket.id);
     progress = speedCoefficient*progress;
     if(player.pressedKeys.left) {
         player.state.x -= progress;
@@ -112,13 +117,13 @@ function update(progress) {
         player.state.y += height;
     }
 
-    socket.emit('update', player);
+    socket.emit('update', player);*/
 }
 
 function loop(timestamp) {
     let progress = timestamp - lastRender;
     if(socket.connected) {
-        update(progress);
+        update();
         draw();
     }
     lastRender = timestamp;

@@ -33,10 +33,13 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 
 app.use('/', indexRouter);
 
+let serverStartTime = Date.now();
+
 io.on('connection', (socket) => {
     debug(`${socket.id} connected!`);
 
     socket.on('player joined', (player, callback) => {
+        player.lastRender = Date.now();
         players.push(player);
         io.emit('update', players);
         callback(true);
@@ -54,11 +57,41 @@ io.on('connection', (socket) => {
         io.emit('update', players);
     });
 
-    socket.on('update', (player) => {
+    socket.on('get current frame', (callback) => {
+        players.forEach((player) => {
+            let progress = (Date.now() - player.lastRender)*0.4;
+            player.lastRender = Date.now();
+            if(player.pressedKeys.left) {
+                player.state.x -= progress;
+            }
+            if(player.pressedKeys.right) {
+                player.state.x += progress;
+            }
+            if(player.pressedKeys.up) {
+                player.state.y -= progress;
+            }
+            if(player.pressedKeys.down) {
+                player.state.y += progress;
+            }
+        
+            if(player.state.x > 700) {
+                player.state.x -= 700;
+            } else if(player.state.x < 0) {
+                player.state.x += 700;
+            } else if(player.state.y > 700) {
+                player.state.y -= 700;
+            } else if(player.state.y < 0) {
+                player.state.y += 700;
+            }
+        });
+        callback(players);
+    });
+
+    /*socket.on('update', (player) => {
         let index = players.findIndex((p) => p.id === player.id);
         players[index] = player;
         io.emit('update', players);
-    });
+    });*/
 
     socket.on('disconnect', (reason) => {
         debug(`${socket.id} disconnected!`);
