@@ -8,6 +8,7 @@ var keyMap = {
     87: 'up',
     83: 'down'
 };
+var speedCoefficient = 0.4;
 var players = [];
 
 const socket = io();
@@ -100,6 +101,7 @@ function draw() {
 
 function update(progress) {
     let player = players.find((p) => p.id === socket.id);
+    progress = speedCoefficient*progress;
     if(player.pressedKeys.left) {
         player.state.x -= progress;
     }
