@@ -38,18 +38,14 @@ const resize = function() {
 function keydown(event) {
     let key = keyMap[event.keyCode];
     if(key) {
-        let player = players.find((p) => p.id === socket.id);
-        player.pressedKeys[key] = true;
-        socket.emit('update', player);
+        socket.emit('keydown', socket.id, key);
     }
 }
 
 function keyup(event) {
     let key = keyMap[event.keyCode];
     if(key) {
-        let player = players.find((p) => p.id === socket.id);
-        player.pressedKeys[key] = false;
-        socket.emit('update', player);
+        socket.emit('keyup', socket.id, key);
     }
 }
 
@@ -75,7 +71,6 @@ function newPlayer(id) {
         }
     };
     socket.emit('player joined', player, (isClientReady) => {
-        console.log(isClientReady);
         if(isClientReady) {
             lastRender = 0;
             window.requestAnimationFrame(loop);

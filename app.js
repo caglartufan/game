@@ -42,6 +42,18 @@ io.on('connection', (socket) => {
         callback(true);
     });
 
+    socket.on('keydown', (playerId, direction) => {
+        let player = players.find((p) => p.id === playerId);
+        player.pressedKeys[direction] = true;
+        io.emit('update', players);
+    });
+
+    socket.on('keyup', (playerId, direction) => {
+        let player = players.find((p) => p.id === playerId);
+        player.pressedKeys[direction] = false;
+        io.emit('update', players);
+    });
+
     socket.on('update', (player) => {
         let index = players.findIndex((p) => p.id === player.id);
         players[index] = player;
