@@ -8,7 +8,6 @@ const keyMap = {
     83: 'down'
 };
 var players = [];
-var cookies = [];
 
 const socket = io();
 
@@ -16,9 +15,8 @@ socket.on('connect', () => {
     newPlayer();
 });
 
-socket.on('update', (game) => {
-    players = game.players;
-    //cookies = game.cookies;
+socket.on('update', (playersConnected) => {
+    players = playersConnected;
 });
 
 socket.on('player left', (playerId) => {

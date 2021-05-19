@@ -1,4 +1,4 @@
 canvas#game {
-    background: #000;
+    background: linear-gradient(180deg, #85e4fc 0%, #abedfc 100%);
     display: block;
 }
