@@ -4,13 +4,17 @@ const http = require('http');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const debug = require('debug')('game:app');
+const helmet = require('helmet');
+const cors = require('cors');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 
 const app = express();
-const server = http.createServer(app);
 
+app.use(helmet());
+
+const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 
@@ -20,6 +24,7 @@ var players = [];
 app.set('views', path.join(process.cwd(), 'views'));
 app.set('view engine', 'pug');
 
+app.use(cors());
 //app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
