@@ -92,32 +92,6 @@ function update() {
             players = connectedPlayers;
         }
     });
-    /*let player = players.find((p) => p.id === socket.id);
-    progress = speedCoefficient*progress;
-    if(player.pressedKeys.left) {
-        player.state.x -= progress;
-    }
-    if(player.pressedKeys.right) {
-        player.state.x += progress;
-    }
-    if(player.pressedKeys.up) {
-        player.state.y -= progress;
-    }
-    if(player.pressedKeys.down) {
-        player.state.y += progress;
-    }
-
-    if(player.state.x > width) {
-        player.state.x -= width;
-    } else if(player.state.x < 0) {
-        player.state.x += width;
-    } else if(player.state.y > height) {
-        player.state.y -= height;
-    } else if(player.state.y < 0) {
-        player.state.y += height;
-    }
-
-    socket.emit('update', player);*/
 }
 
 function loop(timestamp) {
