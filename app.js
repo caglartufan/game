@@ -17,6 +17,7 @@ app.use(helmet());
 
 const server = http.createServer(app);
 const { Server } = require('socket.io');
+const game = require('./lib/game');
 const io = new Server(server);
 
 var players = [];
@@ -38,6 +39,47 @@ let gameConfig = {
     startTime: Date.now(),
     height: 700,
     width: 700
+}
+
+function updateVelocity(progress, player) {
+    if(player.pressedKeys.left) {
+        player.speed.x -= 0.3*progress;
+    }
+    else if(player.pressedKeys.right) {
+        player.speed.x += 0.3*progress;
+    }
+    if(player.pressedKeys.up) {
+        player.speed.y -= 0.3*progress;
+    }
+    else if(player.pressedKeys.down) {
+        player.speed.y += 0.3*progress;
+    }
+
+    if(player.speed.x > 8) {
+        player.speed.x = 8;
+    } else if(player.speed.x < -8) {
+        player.speed.x = -8;
+    }
+    if(player.speed.y > 8) {
+        player.speed.y = 8;
+    } else if(player.speed.y < -8) {
+        player.speed.y = -8;
+    }
+}
+
+function updatePosition(player) {
+    player.state.x += player.speed.x;
+    player.state.y += player.speed.y;
+    
+    if(player.state.x > gameConfig.width) {
+        player.state.x -= gameConfig.width;
+    } else if(player.state.x < 0) {
+        player.state.x += gameConfig.width;
+    } else if(player.state.y > gameConfig.height) {
+        player.state.y -= gameConfig.height;
+    } else if(player.state.y < 0) {
+        player.state.y += gameConfig.height;
+    }
 }
 
 io.on('connection', (socket) => {
@@ -64,30 +106,13 @@ io.on('connection', (socket) => {
 
     socket.on('get current frame', (callback) => {
         players.forEach((player) => {
-            let progress = (Date.now() - player.lastRender)*0.4;
+            let timeElapsed = Date.now()-player.lastRender;
+            let progress = timeElapsed/16;
+
+            updateVelocity(progress, player);
+            updatePosition(player);
+
             player.lastRender = Date.now();
-            if(player.pressedKeys.left) {
-                player.state.x -= progress;
-            }
-            if(player.pressedKeys.right) {
-                player.state.x += progress;
-            }
-            if(player.pressedKeys.up) {
-                player.state.y -= progress;
-            }
-            if(player.pressedKeys.down) {
-                player.state.y += progress;
-            }
-        
-            if(player.state.x > gameConfig.width) {
-                player.state.x -= gameConfig.width;
-            } else if(player.state.x < 0) {
-                player.state.x += gameConfig.width;
-            } else if(player.state.y > gameConfig.height) {
-                player.state.y -= gameConfig.height;
-            } else if(player.state.y < 0) {
-                player.state.y += gameConfig.height;
-            }
         });
         callback(players);
     });

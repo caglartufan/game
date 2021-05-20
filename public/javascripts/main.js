@@ -72,6 +72,7 @@ function update() {
     socket.emit('get current frame', (connectedPlayers) => {
         if(connectedPlayers && connectedPlayers.length) {
             players = connectedPlayers;
+            draw();
         }
     });
 }
@@ -79,7 +80,6 @@ function update() {
 function loop(timestamp) {
     if(socket.connected) {
         update();
-        draw();
     }
     window.requestAnimationFrame(loop);
 }
